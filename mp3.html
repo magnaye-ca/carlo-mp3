@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NIGHTDRIVE // Music Mood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff2ea6;
+    --cyan:#2ee6ff;
+    --purple:#a238ff;
+    --orange:#ff8b3d;
+    --dark:#0d0221;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{
+    height:100%;
+    background:var(--dark);
+    overflow:hidden;
+    font-family:'VT323', monospace;
+    color:#fdf1ff;
+  }
+
+  .stage{
+    position:relative;
+    width:100%;
+    height:100vh;
+    background:linear-gradient(to bottom, #1a0b3d 0%, #4b1a6b 30%, #ff5f6d 60%, #ff8b3d 75%, #1a0b1f 76%, #0d0221 100%);
+    overflow:hidden;
+    display:flex;
+  }
+
+  .sun{
+    position:absolute;
+    left:38%;
+    top:34%;
+    width:200px;
+    height:200px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:linear-gradient(to top, var(--purple), var(--pink) 40%, var(--orange) 80%, #fff9c4);
+    box-shadow:0 0 60px 10px rgba(255,80,160,.6), 0 0 120px 40px rgba(255,140,60,.35);
+    -webkit-mask-image:repeating-linear-gradient(to bottom,#000 0px,#000 6px,transparent 6px,transparent 12px);
+    mask-image:repeating-linear-gradient(to bottom,#000 0px,#000 6px,transparent 6px,transparent 12px);
+    animation:sunPulse 6s ease-in-out infinite;
+    z-index:1;
+  }
+  @keyframes sunPulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.15);}}
+
+  .stars{
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 20%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 70% 15%, #fff, transparent),
+      radial-gradient(1px 1px at 40% 10%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 85% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 10% 35%, #fff, transparent),
+      radial-gradient(1.5px 1.5px at 55% 8%, #fff, transparent);
+    opacity:.8;
+    animation:twinkle 4s ease-in-out infinite alternate;
+    z-index:0;
+  }
+  @keyframes twinkle{from{opacity:.4;}to{opacity:.9;}}
+
+  .grid-floor{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    height:45%;
+    background-color:#12002e;
+    -webkit-mask-image:linear-gradient(to top, black 60%, transparent 100%);
+    mask-image:linear-gradient(to top, black 60%, transparent 100%);
+    z-index:1;
+  }
+  .grid-floor .lines{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(90deg, rgba(46,230,255,.6) 0 2px, transparent 2px 60px);
+    transform:perspective(300px) rotateX(60deg);
+    transform-origin:top;
+    animation:scrollGrid 2.4s linear infinite;
+  }
+  .grid-floor .horiz{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg, rgba(255,46,166,.5) 0 2px, transparent 2px 40px);
+    transform:perspective(300px) rotateX(60deg);
+    transform-origin:top;
+    animation:scrollGrid 2.4s linear infinite;
+  }
+  @keyframes scrollGrid{from{background-position-y:0;}to{background-position-y:40px;}}
+
+  .crt-overlay{
+    position:absolute; inset:0;
+    pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,.15) 1px, rgba(0,0,0,0) 2px);
+    mix-blend-mode:multiply;
+    z-index:6;
+  }
+  .vignette{
+    position:absolute; inset:0;
+    pointer-events:none;
+    box-shadow:inset 0 0 180px 60px rgba(0,0,0,.75);
+    z-index:6;
+  }
+
+  .content{
+    position:relative;
+    z-index:5;
+    flex:1 1 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-top:5vh;
+    text-align:center;
+    min-width:0;
+    overflow-y:auto;
+  }
+
+  .glitch{
+    font-family:'Press Start 2P', monospace;
+    font-size:clamp(1.3rem, 5vw, 2.6rem);
+    letter-spacing:3px;
+    color:#fff;
+    position:relative;
+    text-shadow:0 0 8px var(--cyan), 0 0 20px var(--pink);
+  }
+  .glitch::before,.glitch::after{
+    content:attr(data-text);
+    position:absolute; left:0; top:0; width:100%;
+  }
+  .glitch::before{color:var(--cyan);transform:translate(-2px,-1px);animation:glitchTop 3.4s infinite linear alternate-reverse;}
+  .glitch::after{color:var(--pink);transform:translate(2px,1px);animation:glitchBot 2.6s infinite linear alternate-reverse;}
+  @keyframes glitchTop{0%{clip-path:inset(0 0 85% 0);}20%{clip-path:inset(10% 0 60% 0);}40%{clip-path:inset(40% 0 30% 0);}60%{clip-path:inset(5% 0 70% 0);}80%{clip-path:inset(60% 0 10% 0);}100%{clip-path:inset(0 0 85% 0);}}
+  @keyframes glitchBot{0%{clip-path:inset(70% 0 5% 0);}25%{clip-path:inset(20% 0 55% 0);}50%{clip-path:inset(50% 0 20% 0);}75%{clip-path:inset(10% 0 65% 0);}100%{clip-path:inset(70% 0 5% 0);}}
+
+  .clock-line{
+    margin-top:10px;
+    font-size:1.4rem;
+    letter-spacing:3px;
+    color:var(--cyan);
+    text-shadow:0 0 6px var(--cyan);
+  }
+  .clock-line span{color:var(--orange); text-shadow:0 0 6px var(--orange);}
+
+  .tagline{
+    margin-top:4px;
+    font-size:1rem;
+    letter-spacing:2px;
+    color:#fdf1ff;
+    opacity:.75;
+  }
+
+  .player{
+    margin-top:5vh;
+    margin-bottom:4vh;
+    width:min(360px, 85vw);
+    background:linear-gradient(145deg,#1a0b3d,#2b0a45);
+    border:2px solid var(--pink);
+    border-radius:10px;
+    padding:16px 18px;
+    box-shadow:0 0 20px rgba(255,46,166,.5), inset 0 0 12px rgba(46,230,255,.2);
+  }
+  .label{
+    font-size:.8rem; letter-spacing:2px; color:var(--orange);
+    display:flex; justify-content:space-between; margin-bottom:8px;
+  }
+  .reels{display:flex; justify-content:space-around; align-items:center; margin:10px 0 14px;}
+  .reel{
+    width:44px; height:44px; border-radius:50%;
+    background:radial-gradient(circle, #0d0221 30%, var(--purple) 32%, #0d0221 36%, transparent 38%);
+    border:3px solid var(--cyan); box-shadow:0 0 10px var(--cyan);
+    animation:spin 2.6s linear infinite; animation-play-state:paused;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .tape-window{flex:1; height:14px; margin:0 10px; border-radius:6px; background:#0d0221; box-shadow:inset 0 0 6px #000;}
+
+  .track{font-size:1rem; letter-spacing:1px; text-align:left; margin-bottom:6px; word-break:break-word;}
+  .filepick{
+    display:inline-block;
+    font-size:.85rem;
+    letter-spacing:1px;
+    color:var(--dark);
+    background:var(--cyan);
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-bottom:10px;
+    box-shadow:0 0 8px var(--cyan);
+  }
+  .filepick:hover{ filter:brightness(1.1); }
+  input[type=file]{ display:none; }
+
+  .progress-track{width:100%; height:6px; background:rgba(255,255,255,.15); border-radius:4px; overflow:hidden; cursor:pointer;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--cyan),var(--pink)); box-shadow:0 0 8px var(--pink);}
+
+  .controls{display:flex; justify-content:center; gap:16px; margin-top:12px; font-size:1.3rem; color:var(--cyan);}
+  .controls span{cursor:pointer; transition:transform .15s, text-shadow .15s;}
+  .controls span:hover{transform:scale(1.25); text-shadow:0 0 10px var(--cyan);}
+
+  .noise-row{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed rgba(255,255,255,.25);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .noise-row .row-top{display:flex; justify-content:space-between; align-items:center;}
+  .toggle{
+    width:44px; height:22px; border-radius:12px; background:rgba(255,255,255,.2);
+    position:relative; cursor:pointer; transition:background .2s;
+  }
+  .toggle.on{ background:var(--pink); box-shadow:0 0 10px var(--pink); }
+  .toggle::after{
+    content:""; position:absolute; top:2px; left:2px; width:18px; height:18px;
+    background:#fff; border-radius:50%; transition:left .2s;
+  }
+  .toggle.on::after{ left:24px; }
+  .vol-slider{ width:100%; }
+
+  .notepad{
+    position:relative;
+    z-index:5;
+    width:280px;
+    flex:0 0 280px;
+    background:linear-gradient(160deg,#fff6da,#f5e6b8);
+    color:#3a2b12;
+    padding:18px 16px;
+    box-shadow:-6px 0 24px rgba(0,0,0,.5);
+    display:flex;
+    flex-direction:column;
+    border-left:3px solid var(--pink);
+    font-family:'VT323', monospace;
+  }
+  .notepad h2{
+    font-family:'Press Start 2P', monospace;
+    font-size:.85rem;
+    color:#7a2f7a;
+    margin-bottom:4px;
+    letter-spacing:1px;
+  }
+  .notepad .sub{
+    font-size:.85rem;
+    color:#8a6d2f;
+    margin-bottom:14px;
+  }
+  .quest-input{
+    display:flex;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .quest-input input{
+    flex:1;
+    padding:6px 8px;
+    border:2px solid #d8b34a;
+    border-radius:6px;
+    font-family:'VT323', monospace;
+    font-size:1rem;
+    background:#fffdf3;
+    color:#3a2b12;
+  }
+  .quest-input button{
+    border:none;
+    background:#7a2f7a;
+    color:#fff;
+    padding:0 14px;
+    border-radius:6px;
+    font-size:1.1rem;
+    cursor:pointer;
+    font-weight:bold;
+  }
+  .quest-input button:hover{ background:#932f93; }
+  .quest-input button:active{ transform:scale(.95); }
+
+  #questList{
+    list-style:none;
+    overflow-y:auto;
+    flex:1;
+    padding-right:4px;
+    min-height:60px;
+  }
+  #questList li{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    background:rgba(255,255,255,.5);
+    border:1px solid #d8b34a;
+    border-radius:6px;
+    padding:8px;
+    margin-bottom:8px;
+    transition:transform .15s, background .2s;
+  }
+  #questList li:hover{ transform:translateX(-2px); }
+  #questList li.done{
+    background:rgba(122,47,122,.15);
+    text-decoration:line-through;
+    opacity:.6;
+  }
+  #questList li input[type=checkbox]{
+    margin-top:3px;
+    width:16px; height:16px;
+    accent-color:#7a2f7a;
+    cursor:pointer;
+  }
+  #questList li span.txt{
+    flex:1;
+    font-size:1.05rem;
+    word-break:break-word;
+  }
+  #questList li button.del{
+    background:none;
+    border:none;
+    color:#a33;
+    font-size:1rem;
+    cursor:pointer;
+  }
+  #questList li button.del:hover{ color:#e00; }
+
+  .empty-msg{
+    font-size:.9rem;
+    color:#a3903f;
+    text-align:center;
+    padding:20px 0;
+  }
+
+  .notepad .footer-note{
+    font-size:.7rem;
+    color:#8a6d2f;
+    text-align:center;
+    margin-top:10px;
+    letter-spacing:1px;
+  }
+
+  @media (max-width: 720px){
+    .stage{ flex-direction:column; overflow-y:auto; height:auto; min-height:100vh; }
+    .notepad{ width:100%; flex:none; border-left:none; border-top:3px solid var(--pink); }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="stars"></div>
+  <div class="sun"></div>
+  <div class="grid-floor"><div class="lines"></div><div class="horiz"></div></div>
+
+  <div class="content">
+    <h1 class="glitch" data-text="NIGHTDRIVE">NIGHTDRIVE</h1>
+    <div class="clock-line">TORONTO <span id="clock">00:00:00</span></div>
+    <p class="tagline">// A MOOD FOR MIDNIGHT CODE SESSIONS //</p>
+
+    <div class="player">
+      <div class="label"><span>SIDE A</span><span id="fileStatus">NO TRACK LOADED</span></div>
+
+      <div class="reels">
+        <div class="reel" id="reelL"></div>
+        <div class="tape-window"></div>
+        <div class="reel" id="reelR"></div>
+      </div>
+
+      <div class="track" id="trackName">▶ Load your own MP3 below</div>
+
+      <label class="filepick" for="mp3Input">📁 CHOOSE MP3</label>
+      <input type="file" id="mp3Input" accept="audio/mp3,audio/mpeg,audio/*">
+
+      <div class="progress-track" id="progressTrack"><div class="progress-fill" id="progressFill"></div></div>
+
+      <div class="controls">
+        <span id="rewind">⏮</span><span id="playBtn">▶</span><span id="forward">⏭</span>
+      </div>
+
+      <div class="noise-row">
+        <div class="row-top">
+          <span>🌊 BROWN NOISE (extra layer)</span>
+          <div class="toggle" id="noiseToggle"></div>
+        </div>
+        <input type="range" id="noiseVol" class="vol-slider" min="0" max="1" step="0.01" value="0.3">
+      </div>
+    </div>
+  </div>
+
+  <div class="notepad">
+    <h2>SIDE QUESTS</h2>
+    <div class="sub">check 'em off, cadet.</div>
+    <div class="quest-input">
+      <input type="text" id="questText" placeholder="Add a side quest..." maxlength="80">
+      <button id="addQuest" type="button">ADD</button>
+    </div>
+    <ul id="questList"></ul>
+    <div class="footer-note" id="storageNote">saved locally · survives refresh</div>
+  </div>
+
+  <div class="crt-overlay"></div>
+  <div class="vignette"></div>
+</div>
+
+<audio id="audio" preload="auto"></audio>
+
+<script>
+/* ---------------- LIVE CLOCK (Toronto, 24h, with seconds) ---------------- */
+function tick(){
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone:'America/Toronto',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  });
+  document.getElementById('clock').textContent = fmt.format(new Date());
+}
+tick();
+setInterval(tick, 1000);
+
+/* ---------------- USER MP3 PLAYER ---------------- */
+const audio = document.getElementById('audio');
+const mp3Input = document.getElementById('mp3Input');
+const playBtn = document.getElementById('playBtn');
+const trackName = document.getElementById('trackName');
+const fileStatus = document.getElementById('fileStatus');
+const progressTrack = document.getElementById('progressTrack');
+const progressFill = document.getElementById('progressFill');
+const reelL = document.getElementById('reelL');
+const reelR = document.getElementById('reelR');
+const rewindBtn = document.getElementById('rewind');
+const forwardBtn = document.getElementById('forward');
+
+mp3Input.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+  audio.src = url;
+  trackName.textContent = '▶ ' + file.name;
+  fileStatus.textContent = 'LOADED';
+  audio.play().catch(()=>{});
+});
+
+playBtn.addEventListener('click', () => {
+  if(!audio.src){ mp3Input.click(); return; }
+  if(audio.paused){ audio.play().catch(()=>{}); } else { audio.pause(); }
+});
+
+rewindBtn.addEventListener('click', () => { audio.currentTime = Math.max(0, audio.currentTime - 10); });
+forwardBtn.addEventListener('click', () => { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
+
+audio.addEventListener('play', () => {
+  playBtn.textContent = '⏸';
+  reelL.style.animationPlayState = 'running';
+  reelR.style.animationPlayState = 'running';
+});
+audio.addEventListener('pause', () => {
+  playBtn.textContent = '▶';
+  reelL.style.animationPlayState = 'paused';
+  reelR.style.animationPlayState = 'paused';
+});
+audio.addEventListener('timeupdate', () => {
+  if(audio.duration){
+    progressFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+  }
+});
+progressTrack.addEventListener('click', (e) => {
+  if(!audio.duration) return;
+  const rect = progressTrack.getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  audio.currentTime = ratio * audio.duration;
+});
+
+/* ---------------- BROWN NOISE (Web Audio API, generated, no file needed) ---------------- */
+let audioCtx = null;
+let brownNode = null;
+let noiseGain = null;
+let noisePlaying = false;
+
+function ensureCtx(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    noiseGain = audioCtx.createGain();
+    noiseGain.gain.value = parseFloat(document.getElementById('noiseVol').value);
+    noiseGain.connect(audioCtx.destination);
+  }
+  if(audioCtx.state === 'suspended'){ audioCtx.resume().catch(()=>{}); }
+}
+
+function createBrownNoise(){
+  const bufferSize = 4096;
+  const node = audioCtx.createScriptProcessor(bufferSize, 1, 1);
+  let lastOut = 0.0;
+  node.onaudioprocess = (e) => {
+    const output = e.outputBuffer.getChannelData(0);
+    for(let i=0; i<bufferSize; i++){
+      const white = Math.random() * 2 - 1;
+      output[i] = (lastOut + 0.02 * white) / 1.02;
+      lastOut = output[i];
+      output[i] *= 3.5;
+    }
+  };
+  return node;
+}
+
+const noiseToggle = document.getElementById('noiseToggle');
+const noiseVol = document.getElementById('noiseVol');
+
+noiseToggle.addEventListener('click', () => {
+  ensureCtx();
+  if(!noisePlaying){
+    brownNode = createBrownNoise();
+    brownNode.connect(noiseGain);
+    noiseToggle.classList.add('on');
+    noisePlaying = true;
+  } else {
+    brownNode.disconnect();
+    brownNode = null;
+    noiseToggle.classList.remove('on');
+    noisePlaying = false;
+  }
+});
+
+noiseVol.addEventListener('input', () => {
+  if(noiseGain) noiseGain.gain.value = parseFloat(noiseVol.value);
+});
+
+/* ---------------- SIDE QUEST CHECKLIST ---------------- */
+/* Robust storage: tries localStorage, falls back to in-memory
+   array if storage is blocked (common in sandboxed previews). */
+const STORAGE_KEY = 'nightdrive_side_quests';
+let storageWorks = true;
+let memoryQuests = [];
+
+try{
+  const testKey = '__nightdrive_test__';
+  localStorage.setItem(testKey, '1');
+  localStorage.removeItem(testKey);
+}catch(err){
+  storageWorks = false;
+  document.getElementById('storageNote').textContent = 'session only · storage blocked here';
+}
+
+function loadQuests(){
+  if(storageWorks){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }catch(err){
+      return memoryQuests;
+    }
+  }
+  return memoryQuests;
+}
+
+function saveQuests(quests){
+  if(storageWorks){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(quests));
+      return;
+    }catch(err){ /* fall through to memory */ }
+  }
+  memoryQuests = quests;
+}
+
+const questList = document.getElementById('questList');
+const questText = document.getElementById('questText');
+const addQuestBtn = document.getElementById('addQuest');
+
+function renderQuests(){
+  const quests = loadQuests();
+  questList.innerHTML = '';
+  if(quests.length === 0){
+    const empty = document.createElement('li');
+    empty.className = 'empty-msg';
+    empty.style.border = 'none';
+    empty.style.background = 'none';
+    empty.textContent = 'No quests yet. Add one above!';
+    questList.appendChild(empty);
+    return;
+  }
+  quests.forEach((q, idx) => {
+    const li = document.createElement('li');
+    if(q.done) li.classList.add('done');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = !!q.done;
+    cb.dataset.idx = idx;
+    const span = document.createElement('span');
+    span.className = 'txt';
+    span.textContent = q.text;
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.type = 'button';
+    del.textContent = '✕';
+    del.dataset.idx = idx;
+    li.appendChild(cb);
+    li.appendChild(span);
+    li.appendChild(del);
+    questList.appendChild(li);
+  });
+}
+
+function addNewQuest(){
+  const text = questText.value.trim();
+  if(!text) return;
+  const quests = loadQuests();
+  quests.push({ text, done:false });
+  saveQuests(quests);
+  questText.value = '';
+  renderQuests();
+  questText.focus();
+}
+
+addQuestBtn.addEventListener('click', addNewQuest);
+questText.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){
+    e.preventDefault();
+    addNewQuest();
+  }
+});
+
+questList.addEventListener('click', (e) => {
+  const target = e.target;
+  if(target.matches('input[type=checkbox]')){
+    const idx = parseInt(target.dataset.idx, 10);
+    const quests = loadQuests();
+    quests[idx].done = target.checked;
+    saveQuests(quests);
+    renderQuests();
+  } else if(target.matches('button.del')){
+    const idx = parseInt(target.dataset.idx, 10);
+    const quests = loadQuests();
+    quests.splice(idx, 1);
+    saveQuests(quests);
+    renderQuests();
+  }
+});
+
+renderQuests();
+</script>
+
+</body>
+</html>
